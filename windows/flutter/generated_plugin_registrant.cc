@@ -8,8 +8,6 @@
 
 #include <app_links/app_links_plugin_c_api.h>
 #include <audioplayers_windows/audioplayers_windows_plugin.h>
-#include <cloud_firestore/cloud_firestore_plugin_c_api.h>
-#include <firebase_core/firebase_core_plugin_c_api.h>
 #include <gal/gal_plugin_c_api.h>
 #include <list_all_videos/list_all_videos_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
@@ -20,10 +18,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("AppLinksPluginCApi"));
   AudioplayersWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("AudioplayersWindowsPlugin"));
-  CloudFirestorePluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("CloudFirestorePluginCApi"));
-  FirebaseCorePluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
   GalPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("GalPluginCApi"));
   ListAllVideosPluginCApiRegisterWithRegistrar(

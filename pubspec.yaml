@@ -50,7 +50,6 @@ dependencies:
   chewie: ^1.8.5
   url_launcher: ^6.3.1
   video_thumbnail_imageview: ^0.0.6
-  cloud_firestore: ^5.5.1
   flutter_serial_communication: ^0.2.8
   stop_watch_timer: ^3.2.1
   flutter_bluetooth_serial:

@@ -14,7 +14,6 @@ import '../data/online_db_controller.dart';
 import 'data_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail_imageview/video_thumbnail_imageview.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
