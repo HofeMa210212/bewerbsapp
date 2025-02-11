@@ -1,0 +1,79 @@
+name: bewerbsapp
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_reactive_ble: ^5.4.0
+  get:
+  permission_handler: ^11.0.0
+  google_fonts: ^6.2.1
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  fl_chart: ^0.69.0
+  audioplayers: ^6.1.0
+  mysql1: ^0.20.0
+
+  flutter_blurhash: ^0.8.2
+  camera: ^0.11.0+2
+  path_provider: ^2.1.5
+  supabase_flutter: ^2.8.1
+  video_player: ^2.9.2
+  chewie: ^1.8.5
+  url_launcher: ^6.3.1
+  video_thumbnail_imageview: ^0.0.6
+  cloud_firestore: ^5.5.1
+  flutter_serial_communication: ^0.2.8
+  stop_watch_timer: ^3.2.1
+  flutter_bluetooth_serial:
+    git:
+      url: https://github.com/HofeMa210212/flutter_bluetooth_serial.git
+  list_all_videos: ^1.2.0
+  gal: ^2.3.1
+      #ref: main
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/sounds/angriffsBefehl.mp3
+    - assets/sounds/buzzer_sound_stop.mp3
+    - assets/img/placeholder.png
