@@ -1,15 +1,39 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '13.0'
 
-target 'Runner' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-  # Pods for Runner
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+# Hilfsfunktion, um Flutter-root zu bestimmen
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} muss existieren. Wenn du pod install manuell ausführst, stelle sicher, dass 'flutter pub get' bereits gelaufen ist."
+  end
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT nicht in #{generated_xcode_build_settings_path} gefunden."
+end
+
+# Importiere den Flutter Podhelper, der die Plugins integriert.
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  # Dies fügt alle Flutter-Plugins (wie app_links) hinzu.
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
   target 'RunnerTests' do
     inherit! :search_paths
-    # Pods for testing
   end
-
 end
