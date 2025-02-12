@@ -463,27 +463,47 @@ class _TimerpageState extends State<TimerPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-
-              Text(
-                (_connectedDevice != null)? _connectedDevice : "nicht verbunden",
-                style: TextStyle(
-                  color: Colors.white70,
-
-                ),
-              ),
-
-              Text(
-                (connectionStatus != null)? connectionStatus : "",
-                style: TextStyle(
-                  color: Colors.white70,
-                ),
-              ),
-
+              //Container zum Anzeigen des Verbuindungsstatuses mit dem Esp_32 (Buzzer)
               Container(
+                height: MediaQuery.of(context).size.height * 0.04,
 
+                child: Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.02,
+
+                      child: FittedBox(
+                        child: Text(
+                          (_connectedDevice != null)? _connectedDevice : "nicht verbunden",
+                          style: TextStyle(
+                            color: Colors.white70,
+
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.02,
+
+                      child: FittedBox(
+                        child: Text(
+                          (connectionStatus != null)? connectionStatus : "",
+                          style: TextStyle(
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //Container zum Anzeigen der Zeit
+              Container(
+                height: s.screenHeight(context) * 0.13,
                 width: s.screenWidth(context) * 0.9,
-                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.02),
-                decoration: BoxDecoration(),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.03),
                 child: Center(
                   child: Column(
                     children: [
@@ -499,21 +519,31 @@ class _TimerpageState extends State<TimerPage> {
                             // Formatierung ohne führende Null bei Minute
                             _currentTime = '$minutes:${seconds.toString().padLeft(2, '0')}:${milliseconds.toString().padLeft(2, '0')}';
 
-                            return Text(
-                              minutes > 0
-                                  ? '$minutes:${seconds.toString().padLeft(2, '0')}.${milliseconds.toString().padLeft(3, '0')}'
-                                  : '${seconds.toString()}.${milliseconds.toString().padLeft(3, '0')}',
-                              style: GoogleFonts.roboto(fontSize: 88, color: Colors.white),
+                            return Container(
+                              height: s.screenHeight(context) * 0.13,
+                              child: FittedBox(
+                                child: Text(
+                                  minutes > 0
+                                      ? '$minutes:${seconds.toString().padLeft(2, '0')}.${milliseconds.toString().padLeft(3, '0')}'
+                                      : '${seconds.toString()}.${milliseconds.toString().padLeft(3, '0')}',
+                                  style: GoogleFonts.roboto( color: Colors.white),
+                                ),
+                              ),
                             );
                           },
                         ),
                       ]else...[
                         Center(
-                          child: Text(
-                            (remeaningTime).toString(),
-                            style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 88
+                          child: Container(
+                            height: s.screenHeight(context) * 0.13,
+                            child: FittedBox(
+                              child: Text(
+                                (remeaningTime).toString(),
+                                style: GoogleFonts.roboto(
+                                    color: Colors.white,
+                                    fontSize: 88
+                                ),
+                              ),
                             ),
                           ),
 
@@ -528,8 +558,9 @@ class _TimerpageState extends State<TimerPage> {
                 ),
               ),
 
+              //Container zum Anzeigen des Videos
               Container(
-                height: 200,
+                height: s.screenHeight(context) * 0.25,
                 color: Colors.transparent,
                 child: FutureBuilder<void>(
                   future: _cameraInitFuture,
@@ -561,10 +592,11 @@ class _TimerpageState extends State<TimerPage> {
                 ),
               ),
 
+              //Container zum einstellen ob mit oder ohne Video
               Container(
-                height: 40,
+                height: s.screenHeight(context) * 0.045,
                 width: s.screenWidth(context) * 0.5,
-                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.02),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.01),
                 decoration: BoxDecoration(
                   color: basicContainerColor,
                   borderRadius: BorderRadius.circular(10),
@@ -574,7 +606,7 @@ class _TimerpageState extends State<TimerPage> {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       curve: Curves.easeInOut,
-                      height: 40,
+                      height: s.screenHeight(context) * 0.045,
                       width: s.screenWidth(context) * 0.5 / 2,
                       margin: EdgeInsets.only(left: withVideo ? s.screenWidth(context) * 0.5/2 : 0.0),
                       decoration: BoxDecoration(
@@ -593,7 +625,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.5 / 2,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045,
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -611,7 +643,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.5 / 2,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -626,10 +658,11 @@ class _TimerpageState extends State<TimerPage> {
                 ),
               ),
 
+              //Container zum einstellen ob mit oder ohne Befehl
               Container(
-                height: 40,
+                height: s.screenHeight(context) * 0.045,
                 width: s.screenWidth(context) * 0.5,
-                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.03),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.02),
                 decoration: BoxDecoration(
                   color: basicContainerColor,
                   borderRadius: BorderRadius.circular(10),
@@ -639,7 +672,7 @@ class _TimerpageState extends State<TimerPage> {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       curve: Curves.easeInOut,
-                      height: 40,
+                      height: s.screenHeight(context) * 0.045,
                       width: s.screenWidth(context) * 0.5 / 2,
                       margin: EdgeInsets.only(left: withSound ? s.screenWidth(context) * 0.5/2 : 0.0),
                       decoration: BoxDecoration(
@@ -659,7 +692,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.5 / 2,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -675,7 +708,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.5 / 2,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -690,10 +723,11 @@ class _TimerpageState extends State<TimerPage> {
                 ),
               ),
 
+              //Container zum einstellen der Zeit bis zum Befehl
               Container(
-                height: 40,
+                height: s.screenHeight(context) * 0.045,
                 width: s.screenWidth(context) * 0.7,
-                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.03),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.02),
                 decoration: BoxDecoration(
                   color: basicContainerColor,
                   borderRadius: BorderRadius.circular(10),
@@ -703,7 +737,7 @@ class _TimerpageState extends State<TimerPage> {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       curve: Curves.easeInOut,
-                      height: 40,
+                      height: s.screenHeight(context) * 0.045,
                       width: s.screenWidth(context) * 0.7 / 4,
                       margin: EdgeInsets.only(left: s.screenWidth(context) * marginContainerDelayValue),
                       decoration: BoxDecoration(
@@ -723,7 +757,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.7 / 4,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -740,7 +774,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.7 / 4,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -757,7 +791,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.7 / 4,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -774,7 +808,7 @@ class _TimerpageState extends State<TimerPage> {
                           },
                           child: Container(
                             width: s.screenWidth(context) * 0.7 / 4,
-                            height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                            height: s.screenHeight(context) * 0.045, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                             alignment: Alignment.center, // Zentriert den Text
                             decoration: BoxDecoration(
                               color: Colors.transparent, // Setzt eine transparente Farbe
@@ -788,8 +822,9 @@ class _TimerpageState extends State<TimerPage> {
                 ),
               ),
 
+              //Container für die BUttons
               Container(
-                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.05),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

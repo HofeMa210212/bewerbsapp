@@ -57,6 +57,8 @@ dependencies:
       url: https://github.com/HofeMa210212/flutter_bluetooth_serial.git
   list_all_videos: ^1.2.0
   gal: ^2.3.1
+  cloud_firestore: ^5.6.3
+  device_preview: ^1.2.0
       #ref: main
 
 

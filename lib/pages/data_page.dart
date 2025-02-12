@@ -34,7 +34,7 @@ class DataPage extends StatefulWidget {
 }
 
 class _DataPageState extends State<DataPage> {
-   late var times;
+    late var times;
    DatabaseHelper db = DatabaseHelper();
    OnlineDataBase db_online = OnlineDataBase();
 
@@ -266,11 +266,12 @@ class _DataPageState extends State<DataPage> {
         child: Column(
           children: [
 
+            //Container zum Anzeigen der Anzahl der Läufe
             Center(
               child: Container(
-                height: 35,
+                height: s.screenHeight(context) * 0.04,
                 width: s.screenWidth(context) * 0.7,
-                margin: EdgeInsets.only(top: 10),
+                margin: EdgeInsets.only(top: s.screenHeight(context) * 0.01),
                 decoration: BoxDecoration(
                   color: basicContainerColor,
                   borderRadius: BorderRadius.circular(10)
@@ -287,65 +288,67 @@ class _DataPageState extends State<DataPage> {
               ),
             ),
 
+            //Container zum Anzeigen der Zeiten
             Center(
-        child: Container(
-        height: s.screenHeight(context) * 0.31,
-          width: s.screenWidth(context) * 0.9,
-          margin: const EdgeInsets.only(top: 5),
-          decoration: BoxDecoration(
-            color: const Color(0xFF151515),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListView.builder(
-            itemCount: times.length,
-            padding: const EdgeInsets.only(top: 8),
-            itemBuilder: (context, indexTimes) {
-              return Container(
-                width: s.screenWidth(context) * 0.8,
-                height: 40,
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: basicContainerColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                          await db_online.connect();
-                        db.deleteTime(times[indexTimes]["id"].toString());
-                        await db_online.deleteTime(times[indexTimes]["id"]);
-                        await db_online.closeConnection();
-                        getLocalTimes();
-                      },
-                      child: SizedBox(
-                        width: s.screenWidth(context) * 0.1,
-                        height: 40,
-                        child: Icon(
-                          Icons.remove_circle_outline,
-                          color: basicAppRed,
-                          size: 25,
-                        ),
-                      ),
+              child: Container(
+              height: s.screenHeight(context) * 0.28,
+              width: s.screenWidth(context) * 0.9,
+              margin:  EdgeInsets.only(top: s.screenHeight(context) * 0.01),
+              decoration: BoxDecoration(
+                color: const Color(0xFF151515),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListView.builder(
+                itemCount: times.length,
+                padding: const EdgeInsets.only(top: 8),
+                itemBuilder: (context, indexTimes) {
+                  return Container(
+                    width: s.screenWidth(context) * 0.8,
+                    height: 40,
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: basicContainerColor,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          times[indexTimes]["runtime"],
-                          style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                              await db_online.connect();
+                            db.deleteTime(times[indexTimes]["id"].toString());
+                            await db_online.deleteTime(times[indexTimes]["id"]);
+                            await db_online.closeConnection();
+                            getLocalTimes();
+                          },
+                          child: SizedBox(
+                            width: s.screenWidth(context) * 0.1,
+                            height: 40,
+                            child: Icon(
+                              Icons.remove_circle_outline,
+                              color: basicAppRed,
+                              size: 25,
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              times[indexTimes]["runtime"],
+                              style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+                  );
+                },
+              ),
+            ),
       ),
 
+            //Cotainer zum auswählen der Zeitspannen
             Container(
-              height: 40,
+              height: s.screenHeight(context) * 0.045,
               width: s.screenWidth(context) * 0.875,
               margin: EdgeInsets.only(top: s.screenHeight(context) * 0.02),
               decoration: BoxDecoration(
@@ -357,7 +360,7 @@ class _DataPageState extends State<DataPage> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
-                    height: 40,
+                    height: s.screenHeight(context) * 0.05,
                     width: s.screenWidth(context) * 0.7 / 4,
                     margin: EdgeInsets.only(left: s.screenWidth(context) * marginContainerRunTimSpanValue),
                     decoration: BoxDecoration(
@@ -378,7 +381,7 @@ class _DataPageState extends State<DataPage> {
                         },
                         child: Container(
                           width: s.screenWidth(context) * 0.7 / 4,
-                          height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                          height: s.screenHeight(context) * 0.05, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                           alignment: Alignment.center, // Zentriert den Text
                           decoration: const BoxDecoration(
                             color: Colors.transparent, // Setzt eine transparente Farbe
@@ -396,7 +399,7 @@ class _DataPageState extends State<DataPage> {
                         },
                         child: Container(
                           width: s.screenWidth(context) * 0.7 / 4,
-                          height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                          height: s.screenHeight(context) * 0.05, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                           alignment: Alignment.center, // Zentriert den Text
                           decoration: const BoxDecoration(
                             color: Colors.transparent, // Setzt eine transparente Farbe
@@ -415,7 +418,7 @@ class _DataPageState extends State<DataPage> {
                         },
                         child: Container(
                           width: s.screenWidth(context) * 0.7 / 4,
-                          height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                          height: s.screenHeight(context) * 0.05, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                           alignment: Alignment.center, // Zentriert den Text
                           decoration: const BoxDecoration(
                             color: Colors.transparent, // Setzt eine transparente Farbe
@@ -434,7 +437,7 @@ class _DataPageState extends State<DataPage> {
                         },
                         child: Container(
                           width: s.screenWidth(context) * 0.7 / 4,
-                          height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                          height: s.screenHeight(context) * 0.05,
                           alignment: Alignment.center, // Zentriert den Text
                           decoration: const BoxDecoration(
                             color: Colors.transparent, // Setzt eine transparente Farbe
@@ -453,7 +456,7 @@ class _DataPageState extends State<DataPage> {
                         },
                         child: Container(
                           width: s.screenWidth(context) * 0.7 / 4,
-                          height: 40, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
+                          height: s.screenHeight(context) * 0.05, // Füge eine Höhe hinzu, um die Klickelemente größer zu machen
                           alignment: Alignment.center, // Zentriert den Text
                           decoration: const BoxDecoration(
                             color: Colors.transparent, // Setzt eine transparente Farbe
@@ -466,15 +469,17 @@ class _DataPageState extends State<DataPage> {
                 ],
               ),
             ),
-            
+
+            //Container zum wechseln der Zeitspannen und Anzeige der aktuellen Zeitspanne
             Center(
               child: Container(
                 margin: EdgeInsets.only(top: s.screenHeight(context) * 0.01),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    //Container zum wechseln der Zeitspanne
                     Container(
-                      height: 40,
+                      height: s.screenHeight(context) * 0.045,
                       width: s.screenWidth(context) * 0.3,
                       decoration: BoxDecoration(
                         color: basicContainerColor,
@@ -593,19 +598,24 @@ class _DataPageState extends State<DataPage> {
                         ],
                       ),
                     ),
+
+                    //Container zum Anzeigen der aktuellen Zeitspanne
                     Container(
-                      height: 40,
+                      height: s.screenHeight(context) * 0.045,
                       width: s.screenWidth(context) * 0.45,
                       decoration: BoxDecoration(
                         color: basicContainerColor,
                         borderRadius: BorderRadius.circular(10)
                       ),
 
-                      child: Center(
-                        child: Text(
-                          "$formatedRrightSpanBorder  -  $formatedLeftSpanBorder",
-                          style: GoogleFonts.roboto(fontSize: 15, color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: FittedBox(
+                          child: Text(
+                            "$formatedRrightSpanBorder  -  $formatedLeftSpanBorder",
+                            style: GoogleFonts.roboto(fontSize: 15, color: Colors.white),
 
+                          ),
                         ),
                       ),
                     )
@@ -616,36 +626,46 @@ class _DataPageState extends State<DataPage> {
               ),
             ),
 
-            Row(
-              children: [
-                Container(
-                  height: s.screenHeight(context) * 0.35,
-                  width: s.screenWidth(context) * 0.1,
-                  color: Colors.transparent,
-
-                  child: Column(
-                    children: List.generate(xAchseTitles.length, (indexXAxes){
-                      return Container(
-                        height: s.screenHeight(context) * 0.35 / xAchseTitles.length,
-                        child: Center(
-                          child: Text(xAchseTitles[indexXAxes]),
-                        ),
-                      );
-                    })
-                  ),
-                ),
-                Container(
+            //Container zum anzeigen der Daten
+            Container(
+              height: s.screenHeight(context) * 0.3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  /*Container(
                     height: s.screenHeight(context) * 0.35,
-                    width: s.screenWidth(context) * 0.8,
-                    margin: const EdgeInsets.only(top: 15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12)
+                    width: s.screenWidth(context) * 0.1,
+                    color: Colors.transparent,
+
+                    child: Column(
+                      children: List.generate(xAchseTitles.length, (indexXAxes){
+                        return Container(
+                          height: s.screenHeight(context) * 0.35 / xAchseTitles.length,
+                          child: Center(
+                            child: Text(xAchseTitles[indexXAxes]),
+                          ),
+                        );
+                      })
                     ),
-                    child: SimpleLineChart(
-                      dataPoints: makePoints(times),
-                    )
-                ),
-              ],
+                  ),
+
+                   */
+
+
+                  Container(
+                      height: s.screenHeight(context) * 0.45,
+                      width: s.screenWidth(context) * 0.9,
+                      margin: const EdgeInsets.only(top: 15),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12)
+                      ),
+                      child: SimpleLineChart(
+                        dataPoints: makePoints(times),
+                        times: times,
+                      )
+                  ),
+                ],
+              ),
             ),
 
             /*Container(

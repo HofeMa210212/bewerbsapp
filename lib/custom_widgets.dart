@@ -27,9 +27,10 @@ Widget actionButton(BuildContext context, double width, Color color, Color iconC
 class SimpleLineChart extends StatelessWidget {
 
   final List<FlSpot> dataPoints;
+  final List<Map<String, dynamic>> times;
 
   SimpleLineChart({
-    required this.dataPoints,
+    required this.dataPoints, required this.times,
   });
 
   @override
@@ -42,7 +43,7 @@ class SimpleLineChart extends StatelessWidget {
       borderRadius: BorderRadius.all(Radius.circular(10)),
       child: LineChart(
         LineChartData(
-          minY: 0.5,
+          minY: -1,
 
             gridData: FlGridData(
               show: true,
@@ -82,17 +83,17 @@ class SimpleLineChart extends StatelessWidget {
               getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                 return touchedBarSpots.map((LineBarSpot spot) {
                   return LineTooltipItem(
-                    '${spot.x}, ${spot.y}', // Text der angezeigt wird
+                    '${times[spot.x.round()]["runTimeDate"].substring(0, 19)} ${spot.y } sek.', // Text der angezeigt wird
                     TextStyle(color: Colors.white), // Weiße Schrift
                   );
                 }).toList();
               },
             ),
           ),
-          minX: 0,
-          maxX: dataPoints.map((e) => e.x).reduce((a, b) => a > b ? a : b) + 0.5,
-         // minY: dataPoints.map((e) => e.y).reduce((a, b) => a < b ? a : b) - 0.5,
-          maxY: dataPoints.map((e) => e.y).reduce((a, b) => a > b ? a : b) + 3,
+          minX: -1,
+          maxX: dataPoints.map((e) => e.x).reduce((a, b) => a > b ? a : b) + 1,
+
+          maxY: dataPoints.map((e) => e.y).reduce((a, b) => a > b ? a : b) + 10,
         ),
       ),
     );
