@@ -45,34 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-
-    <!-- Berechtigungen -->
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Die App benötigt Zugriff auf Bluetooth, um mit Geräten zu kommunizieren.</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>Die App benötigt Bluetooth, um mit Peripheriegeräten zu kommunizieren.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Die App benötigt Standortzugriff, während sie genutzt wird.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Die App benötigt dauerhaften Zugriff auf den Standort für Bluetooth-Geräte.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>Die App benötigt Zugriff auf die Kamera, um Bilder und Videos aufzunehmen.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Die App benötigt Zugriff auf das Mikrofon für Audioaufnahmen.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Die App benötigt Zugriff auf die Fotobibliothek, um Bilder und Videos zu speichern oder auszuwählen.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Die App benötigt Zugriff, um Fotos und Videos in der Bibliothek zu speichern.</string>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>bluetooth-central</string>
-        <string>bluetooth-peripheral</string>
-    </array>
-
 </dict>
 </plist>
