@@ -5,6 +5,7 @@ import 'package:bewerbsapp/custom_widgets.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:flutter_serial_communication/models/device_info.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +17,6 @@ import '../data/db_controller.dart';
 import '../data/global_data.dart';
 import '../data/online_db_controller.dart';
 import 'package:flutter_serial_communication/flutter_serial_communication.dart';
-import 'bluetooth_page.dart';
 import 'package:gal/gal.dart';
 
 
@@ -72,6 +72,8 @@ class _TimerpageState extends State<TimerPage> {
   late FlutterSerialCommunication _flutterSerialCommunicationPlugin;
   late EventChannel _eventChannel;
 
+  double rotation = 0;
+
 
 
   @override
@@ -86,9 +88,6 @@ class _TimerpageState extends State<TimerPage> {
     _connectToSerialDevice();
     _startListening();
   }
-
-
-
 
   void _connectToSerialDevice() async {
     List<DeviceInfo> availableDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices();
@@ -191,84 +190,9 @@ class _TimerpageState extends State<TimerPage> {
           ).listen( (data) async {
             receivedData = String.fromCharCodes(data);
             print(receivedData);
-            if (receivedData == "1") {
-              if (_stopWatch.isRunning) {
-                setState(() {
-                   _stopWatch.onStopTimer();
-                  print("gestopt");
-                });
-                stopSoundPlayer.play(AssetSource('sounds/buzzer_sound_stop.mp3'));
-              }
-              else {
-                print(_currentTime);
-                if(_currentTime == "0:00:00"){
-                  withSound = true;
-                  if((_currentTime == "0:00:00" && withVideo) || !withVideo){
-                    if(_currentTime == "0:00:00"){
 
-                      final StopWatchTimer topStopwatch = StopWatchTimer(
-                          mode: StopWatchMode.countDown, presetMillisecond: 1000 * waitTime,
-                          onEnded: () async {
-
-                            if(withVideo && _currentTime == "0:00:00"){
-
-                              if(_cameraController.value.isRecordingVideo || _cameraController.value.isRecordingPaused){
-                                _cameraController.stopVideoRecording();
-
-                                startRecordingWithDelay();
-
-                              }else{
-                                startRecordingWithDelay();
-
-                              }
-                            }
-
-                            if(withSound){
-                              audioPlayer.onPlayerComplete.listen((_) {
-                                setState(() {
-                                  _stopWatch.onStartTimer();
-                                });
-                              });
-
-                              if (_currentTime == "0:00:00") {
-                                await audioPlayer.play(AssetSource('sounds/angriffsBefehl.mp3'));
-                              }else{
-                                setState(() {
-                                  _stopWatch.onStartTimer();
-                                });
-                              }
-                            }else{
-                              setState(() {
-                                _stopWatch.onStartTimer();
-                              });
-                            }
-
-
-                          },
-                          onChangeRawSecond: (value){
-                            setState(() {
-                              remeaningTime = value;
-                            });
-                          }
-                      );
-                      topStopwatch.onStartTimer();
-
-                    }else{
-                      setState(() {
-                        _stopWatch.onStartTimer();
-                      });
-                    }
-                  }
-                }
-              }
-
-            }
-
-            if(receivedData.endsWith("°C")){
-              setState(() {
-                temperature = receivedData.split("Â")[0];
-              });
-            }
+            // Hier werden die empfangenen Daten verarbeiten
+            buzzerBleReact(receivedData);
 
             },
             onError: (error) {
@@ -294,6 +218,51 @@ class _TimerpageState extends State<TimerPage> {
     );
   }
 
+  void _sendDataToDevice(String deviceId, List<int> dataToSend) async {
+    // Erstellen Sie die Instanz von FlutterBluePlus
+    FlutterBluePlus flutterBlue = FlutterBluePlus();
+
+    // Suchen Sie das verbundene Gerät
+    BluetoothDevice? device = FlutterBluePlus.connectedDevices.firstWhere((d) => d.id.id == deviceId);
+
+    if (device == null) {
+      print("Gerät nicht verbunden");
+      return;
+    }
+
+    // Definieren Sie die Service- und Charakteristik-UUIDs
+    final serviceUuid = Guid("12345678-1234-1234-1234-1234567890ab");
+    final characteristicUuid = Guid("12345678-1234-1234-1234-1234567890cd");
+
+    // Entdecken Sie die Services und Charakteristiken des Geräts
+    List<BluetoothService> services = await device.discoverServices();
+    BluetoothCharacteristic? targetCharacteristic;
+
+    for (BluetoothService service in services) {
+      if (service.uuid == serviceUuid) {
+        for (BluetoothCharacteristic characteristic in service.characteristics) {
+          if (characteristic.uuid == characteristicUuid) {
+            targetCharacteristic = characteristic;
+            break;
+          }
+        }
+      }
+    }
+
+    if (targetCharacteristic == null) {
+      print("Charakteristik nicht gefunden");
+      return;
+    }
+
+
+    try {
+      await targetCharacteristic.write(dataToSend, withoutResponse: false);
+      print("Daten erfolgreich gesendet");
+    } catch (e) {
+      print("Fehler beim Senden der Daten: $e");
+    }
+  }
+
   void setTimerValue(int value){
     timerDeleyValue = value;
 
@@ -302,14 +271,22 @@ class _TimerpageState extends State<TimerPage> {
   }
 
   Future<void> getCameras() async {
-    // Kameras abrufen und Controller initialisieren
     cameras = await availableCameras();
     camera = cameras[0];
 
-    _cameraController = CameraController(camera, ResolutionPreset.medium);
-    _initializeControllerFuture = _cameraController.initialize();
+    _cameraController = CameraController(
+      camera,
+      ResolutionPreset.medium,
+      imageFormatGroup: ImageFormatGroup.jpeg, // Format setzen
+    );
 
-    setState(() {});
+    _initializeControllerFuture = _cameraController.initialize().then((_) async {
+      if (Platform.isAndroid) {
+        await _cameraController.setExposureMode(ExposureMode.auto);
+        await _cameraController.lockCaptureOrientation();
+      }
+      setState(() {});
+    });
   }
 
   Future<void> _takePicture() async {
@@ -404,13 +381,94 @@ class _TimerpageState extends State<TimerPage> {
 
   }
 
-
   void startRecordingWithDelay() {
     // Starte die Verzögerung, aber blockiere nicht das UI oder andere Prozesse
     Future.delayed(Duration(seconds: 15), () async {
       // Starte die Videoaufnahme nach 10 Sekunden
       await _cameraController.startVideoRecording();
     });
+  }
+
+  void buzzerBleReact(String data){
+    if (receivedData == "1") {
+      if (_stopWatch.isRunning) {
+        setState(() {
+          _stopWatch.onStopTimer();
+          print("gestopt");
+        });
+        stopSoundPlayer.play(AssetSource('sounds/buzzer_sound_stop.mp3'));
+      }
+      else {
+        print(_currentTime);
+        if(_currentTime == "0:00:00"){
+          withSound = true;
+          if((_currentTime == "0:00:00" && withVideo) || !withVideo){
+            if(_currentTime == "0:00:00"){
+
+              final StopWatchTimer topStopwatch = StopWatchTimer(
+                  mode: StopWatchMode.countDown, presetMillisecond: 1000 * waitTime,
+                  onEnded: () async {
+
+                    if(withVideo && _currentTime == "0:00:00"){
+
+                      if(_cameraController.value.isRecordingVideo || _cameraController.value.isRecordingPaused){
+                        _cameraController.stopVideoRecording();
+
+                        startRecordingWithDelay();
+
+                      }else{
+                        startRecordingWithDelay();
+
+                      }
+                    }
+
+                    if(withSound){
+                      audioPlayer.onPlayerComplete.listen((_) {
+                        setState(() {
+                          _stopWatch.onStartTimer();
+                        });
+                      });
+
+                      if (_currentTime == "0:00:00") {
+                        await audioPlayer.play(AssetSource('sounds/angriffsBefehl.mp3'));
+                      }else{
+                        setState(() {
+                          _stopWatch.onStartTimer();
+                        });
+                      }
+                    }else{
+                      setState(() {
+                        _stopWatch.onStartTimer();
+                      });
+                    }
+
+
+                  },
+                  onChangeRawSecond: (value){
+                    setState(() {
+                      remeaningTime = value;
+                    });
+                  }
+              );
+              topStopwatch.onStartTimer();
+
+            }else{
+              setState(() {
+                _stopWatch.onStartTimer();
+              });
+            }
+          }
+        }
+      }
+
+    }
+
+    if(receivedData.endsWith("°C")){
+      setState(() {
+        temperature = receivedData.split("Â")[0];
+      });
+    }
+
   }
 
   @override
@@ -429,7 +487,8 @@ class _TimerpageState extends State<TimerPage> {
         title: Text("Stoppuhr"),
         backgroundColor: basicAppRed,
         centerTitle: true,
-        leading: Container(
+        leading:
+        /*Container(
 
           margin: EdgeInsets.only(top: 17, left: 5),
           child: Text(
@@ -441,6 +500,22 @@ class _TimerpageState extends State<TimerPage> {
             ),
           ),
         ),
+
+         */
+
+        IconButton(
+          icon: Icon(Icons.crop_rotate),
+          color: Colors.black87,
+          onPressed: () {
+            setState(() {
+              _cameraInitFuture = getCameras();
+            });
+
+          },
+        ),
+
+
+
         actions: [
           IconButton(
             icon: Icon(Icons.connect_without_contact),
@@ -578,8 +653,13 @@ class _TimerpageState extends State<TimerPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 200,
-                              child: CameraPreview(_cameraController),
+                              height: s.screenHeight(context) * 0.25,
+                              width: s.screenHeight(context) * 0.2,
+                              child: RotatedBox(
+                                quarterTurns: 1, // 90° im Uhrzeigersinn drehen
+                                child: CameraPreview(_cameraController),
+                              )
+
                             ),
                           ),
                         ),

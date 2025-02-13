@@ -83,6 +83,7 @@ class _VideoPageState extends State<VideoPage>{
       print('Fehler beim Abrufen der URLs: $e');
     }
   }
+
   Future<void> syncTimes() async{
     await db_online.connect();
     var newTimes = await db_online.getData("SELECT * FROM times");
@@ -201,6 +202,28 @@ class _VideoPageState extends State<VideoPage>{
     }
   }
 
+  Future<void> getBucketSize() async {
+    final bucketName = 'bewerbsViedeos'; // Korrigierter Bucket-Name
+    final folderPath = 'bewerbsVideos'; // Pfad zum Ordner
+    final storage = Supabase.instance.client.storage;
+
+    try {
+      final fileListResponse = await storage.from(bucketName).list(path: folderPath);
+
+      if (fileListResponse.isEmpty) {
+        print('Keine Dateien gefunden.');
+        return;
+      }
+
+      int totalSize = fileListResponse.fold<int>(
+        0, (sum, file) => sum + ((file.metadata?['size'] ?? 0) as num).toInt(),
+      );
+
+      print('Gesamtspeicher belegt: ${totalSize / 1024 / 1024} MB');
+    } catch (e) {
+      print('Fehler beim Abrufen der Speichergröße: $e');
+    }
+  }
 
   String filterUrl(String filename){
     var videoUrl = "";
@@ -216,6 +239,7 @@ class _VideoPageState extends State<VideoPage>{
   void initState() {
     super.initState();
     getData();
+
   }
 
   @override
@@ -232,6 +256,7 @@ class _VideoPageState extends State<VideoPage>{
             icon: const Icon(Icons.sync),
             color: Colors.black87,
             onPressed: () {
+              getBucketSize();
               setState(()  {
                 if(stackIndex ==0) getData();
                 if(stackIndex == 1) getLocalVideoPaths();

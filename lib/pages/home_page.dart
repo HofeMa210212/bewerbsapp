@@ -59,8 +59,8 @@ class _HomePageState extends State<HomePage> {
             label: 'Ergebnise',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.video_call),
+            label: 'Videos',
           ),
 
         ],

@@ -10,6 +10,8 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/db_controller.dart';
 import '../data/global_data.dart';
 import '../data/online_db_controller.dart';
@@ -62,13 +64,93 @@ class _DataPageState extends State<DataPage> {
    List<String> xAchseTitles = [];
 
    var bestThreeTimes = [];
+   var urls = [];
 
    late VideoPlayerController _videoController;
    late ChewieController _chewieController;
    late Chewie playerWidget;
 
 
+    Future<void> deleteVideo(String fileName) async {
+      final bucketName = 'bewerbsViedeos'; // Name deines Buckets
+      final folderPath = 'bewerbsVideos'; // Pfad zum Ordner innerhalb des Buckets
+      final storage = Supabase.instance.client.storage;
+      final supabase = Supabase.instance.client;
 
+      try {
+        final authResponse = await supabase.auth.signInWithPassword(
+          email: 'marvin-hofer@gmx.at',
+          password: 'marcmarvin',
+        );
+
+        if (authResponse.user != null) {
+          print('Benutzer angemeldet: ${authResponse.user!.email}');
+        } else {
+          print('Fehler bei der Anmeldung');
+          return;
+        }
+      } catch (e) {
+        print('Fehler bei der Anmeldung: $e');
+        return;
+      }
+
+      try {
+        await storage.from(bucketName).remove(['$fileName']);
+        print('Video erfolgreich gelöscht: $fileName');
+
+      } catch (e) {
+        print('Fehler beim Löschen des Videos: $e');
+      }
+    }
+
+    Future<void> fetchVideoUrls() async {
+      final bucketName = 'bewerbsViedeos'; // Name deines Buckets
+      final folderPath = 'bewerbsVideos'; // Pfad zum Ordner innerhalb des Buckets
+      final storage = Supabase.instance.client.storage;
+      final supabase = Supabase.instance.client;
+
+      try {
+        final authResponse = await supabase.auth.signInWithPassword(
+          email: 'marvin-hofer@gmx.at',
+          password: 'marcmarvin',
+        );
+
+        if (authResponse.user != null) {
+          print('Benutzer angemeldet: ${authResponse.user!.email}');
+        } else {
+          print('Fehler bei der Anmeldung');
+          return; // Keine weiteren Schritte, wenn Auth fehlgeschlagen ist
+        }
+      } catch (e) {
+        print('Fehler bei der Anmeldung: $e');
+        return;
+      }
+
+      try {
+        // Liste aller Dateien im Bucket abrufen
+        final fileListResponse = await storage.from(bucketName).list(path: folderPath);
+
+        if (fileListResponse.isEmpty) {
+          print('Keine Dateien gefunden.');
+          return;
+        }
+
+        List<String> videoUrls = [];
+
+        for (var file in fileListResponse) {
+          final url = await storage.from(bucketName).getPublicUrl('$folderPath/${file.name}');
+          videoUrls.add(url);
+        }
+
+        print(videoUrls);
+        setState(() {
+          urls = videoUrls;
+        });
+
+      } catch (e) {
+        print('Fehler beim Abrufen der URLs: $e');
+      }
+    }
 
    Future<void> getTimes() async {
      await syncTimes();
@@ -87,9 +169,10 @@ class _DataPageState extends State<DataPage> {
 
    List<FlSpot> makePoints(List<Map<String, dynamic>> data) {
 
+     if (!data.isEmpty) {
      return data.asMap().entries.map((entry) {
 
-       int index = entry.key; // index in the array
+       int index = entry.key;
        Map<String, dynamic> item = entry.value;
 
        String runtimeStr = item['runtime'];
@@ -98,6 +181,11 @@ class _DataPageState extends State<DataPage> {
 
        return FlSpot(index.toDouble(), runtimeSeconds.toDouble());
      }).toList();
+     }else{
+       return [
+         FlSpot(0, 0),
+       ];
+     }
    }
 
    Future<void> setRunTimesSpan(int value,) async {
@@ -224,10 +312,42 @@ class _DataPageState extends State<DataPage> {
 
    }
 
-  @override
+   String filterUrl(String filename){
+      var videoUrl = "";
+
+      for(var url in urls){
+        if(url.contains(filename))  videoUrl =url;
+      }
+
+      return videoUrl;
+    }
+
+    Future<void> _openUrl(String url) async {
+
+      print(url);
+      try {
+        final Uri uri = Uri.parse(url);
+
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication, // Externe App wie den Browser verwenden
+          );
+        } else {
+          throw 'Konnte URL nicht öffnen: $url';
+        }
+      } catch (e) {
+        print('Fehler beim Öffnen der URL: $e');
+      }
+    }
+
+
+
+    @override
   initState() {
     super.initState();
     getTimes();
+    fetchVideoUrls();
   }
 
   @override
@@ -245,8 +365,6 @@ class _DataPageState extends State<DataPage> {
         title: const Text("Daten"),
         backgroundColor: basicAppRed,
         centerTitle: true,
-      
-        
 
         actions: [
           IconButton(
@@ -255,6 +373,7 @@ class _DataPageState extends State<DataPage> {
             onPressed: () {
               setState(()  {
                  getTimes();
+                 fetchVideoUrls();
 
               });
             },
@@ -302,43 +421,172 @@ class _DataPageState extends State<DataPage> {
                 itemCount: times.length,
                 padding: const EdgeInsets.only(top: 8),
                 itemBuilder: (context, indexTimes) {
-                  return Container(
-                    width: s.screenWidth(context) * 0.8,
-                    height: 40,
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: basicContainerColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                              await db_online.connect();
-                            db.deleteTime(times[indexTimes]["id"].toString());
-                            await db_online.deleteTime(times[indexTimes]["id"]);
-                            await db_online.closeConnection();
-                            getLocalTimes();
-                          },
-                          child: SizedBox(
-                            width: s.screenWidth(context) * 0.1,
-                            height: 40,
-                            child: Icon(
-                              Icons.remove_circle_outline,
-                              color: basicAppRed,
-                              size: 25,
+                  return GestureDetector(
+                    onLongPress: (){
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                        transitionDuration: Duration(milliseconds: 150),
+
+                        pageBuilder: (context, anim1, anim2) {
+                          return AlertDialog(
+
+                            backgroundColor: Colors
+                                .grey[900], // Hintergrundfarbe des Dialogs
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16), // Abgerundete Ecken
+                            ),
+                            title: Text(
+                              "Lauf mit der Id: "+times[indexTimes]["id"].toString(),
+                              style: GoogleFonts.roboto(
+                                color: Colors.white70,
+                                fontSize: 20,
+                              ),
+                            ),
+                            content: Container(
+                              height: 250,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Datum: " + times[indexTimes]["runTimeDate"].toString().substring(0,10),
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white70,
+                                      fontSize: 17,
+                                    ),
+
+                                  ),
+                                  Text(
+                                    "Uhrzeit: " + times[indexTimes]["runTimeDate"].toString().substring(10,16),
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white70,
+                                      fontSize: 17,
+                                    ),
+
+                                  ),
+                                  Text(
+                                    "Laufzeit: " + times[indexTimes]["runtime"].toString(),
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white70,
+                                      fontSize: 17,
+                                    ),
+
+                                  ),
+                                  
+                              (times[indexTimes]["videoFileName"] != "") ?
+                              GestureDetector(
+                                onTap: () {
+                                  _openUrl(filterUrl(times[indexTimes]["videoFileName"]));
+                                },
+                                child: Container(
+                                  width: 45,
+                                  height: 65,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Image(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage('assets/img/placeholder.png')
+                                    ,
+
+                                  ),
+                                ),
+                              ) : Container(),
+
+
+                                ],
+                              ),
+                            ),
+
+
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Dialog schließen, wenn abgebrochen wird
+                                },
+                                child: Text(
+                                  "Abbrechen",
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.white70,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.of(context)
+                                      .pop(); // Dialog schließen nach dem Löschen
+                                },
+                                child: Text(
+                                  "Löschen",
+                                  style: GoogleFonts.roboto(
+                                    color: Colors
+                                        .red, // Rote Farbe für die Löschen-Schaltfläche
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        transitionBuilder: (context, anim1, anim2, child) {
+                          return Transform.scale(
+                            scale: anim1.value,
+                            child: Opacity(
+                              opacity: anim1.value,
+                              child: child,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      width: s.screenWidth(context) * 0.8,
+                      height: 40,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: basicContainerColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                                await db_online.connect();
+                              db.deleteTime(times[indexTimes]["id"].toString());
+
+                              if(times[indexTimes]["videoFileName"] != "") {
+                                deleteVideo(times[indexTimes]["videoFileName"]);
+                              }
+
+                              await db_online.deleteTime(times[indexTimes]["id"]);
+
+                              await db_online.closeConnection();
+                              getLocalTimes();
+                            },
+                            child: SizedBox(
+                              width: s.screenWidth(context) * 0.1,
+                              height: 40,
+                              child: Icon(
+                                Icons.remove_circle_outline,
+                                color: basicAppRed,
+                                size: 25,
+                              ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              times[indexTimes]["runtime"],
-                              style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                times[indexTimes]["runtime"],
+                                style: GoogleFonts.roboto(fontSize: 18, color: Colors.white),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -628,7 +876,7 @@ class _DataPageState extends State<DataPage> {
 
             //Container zum anzeigen der Daten
             Container(
-              height: s.screenHeight(context) * 0.3,
+              height: s.screenHeight(context) * 0.37,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -668,7 +916,8 @@ class _DataPageState extends State<DataPage> {
               ),
             ),
 
-            /*Container(
+            /*
+             Container(
               margin: const EdgeInsets.only(top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -728,7 +977,8 @@ class _DataPageState extends State<DataPage> {
                   ),
                 ],
               ),
-            ),  */
+            ),
+             */
 
           ]
         ),

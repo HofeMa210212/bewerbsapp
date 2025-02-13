@@ -100,6 +100,13 @@
             </list>
           </value>
         </entry>
+        <entry key="bluez">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/bluez-0.8.3/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="boolean_selector">
           <value>
             <list>
@@ -321,6 +328,48 @@
           <value>
             <list>
               <option value="$USER_HOME$/snap/flutter/common/flutter/packages/flutter/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus-1.35.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus_android">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_android-2.0.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus_darwin">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_darwin-2.0.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus_linux">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_linux-2.0.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus_platform_interface">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_platform_interface-2.0.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue_plus_web">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_web-2.0.0/lib" />
             </list>
           </value>
         </entry>
@@ -1154,6 +1203,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/audioplayers_platform_interface-7.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/audioplayers_web-5.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/audioplayers_windows-4.0.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/bluez-0.8.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/boolean_selector-2.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera-0.11.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_android_camerax-0.6.13/lib" />
@@ -1185,6 +1235,12 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_core_web-2.20.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fl_chart-0.69.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus-1.35.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_android-2.0.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_darwin-2.0.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_linux-2.0.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_platform_interface-2.0.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blue_plus_web-2.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_blurhash-0.8.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-4.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.24/lib" />

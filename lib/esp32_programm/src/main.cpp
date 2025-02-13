@@ -11,7 +11,6 @@
 // GPIO-Pin für den Button
 #define BUTTON_PIN 18
 
-// BLE-Charakteristik
 BLECharacteristic* pCharacteristic;
 
 // BLE-Server und Advertising-Objekt
@@ -19,6 +18,9 @@ BLEServer* pServer;
 BLEAdvertising* pAdvertising;
 
 bool deviceConnected = false;
+bool timerRunning = false;
+unsigned long startTime = 0;
+unsigned long stopTime = 0;
 
 // BLE-Server-Callback-Klasse
 class MyServerCallbacks : public BLEServerCallbacks {
@@ -36,7 +38,6 @@ class MyServerCallbacks : public BLEServerCallbacks {
   }
 };
 
-// Funktion zum Initialisieren von BLE
 void initBLE() {
   // BLE initialisieren
   BLEDevice::init("ESP32_Bluetooth_Device");
@@ -65,12 +66,10 @@ void initBLE() {
 }
 
 void setup() {
-  Serial.begin(115200); // Serielle Verbindung mit Baudrate 115200 starten
+  Serial.begin(115200); 
 
-  // Button-Pin initialisieren
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  // BLE initialisieren
   initBLE();
 }
 
@@ -81,14 +80,25 @@ void loop() {
     pCharacteristic->setValue("1");
     pCharacteristic->notify();
 
-    // Signal über die serielle Verbindung senden
-    Serial.println("1");
+   
+    if (!timerRunning) {
+      startTime = millis();
+      timerRunning = true;
+    }else{
+      stopTime = millis();
+      timerRunning = false;
+      long elapsedTime = (long)stopTime - (long)startTime - 16930;
+      String timeStr = "t" + String(elapsedTime);
+      pCharacteristic->setValue(timeStr.c_str());
+      pCharacteristic->notify();
+      timerRunning = false;
+    }
 
-    // Warten, bis der Button losgelassen wird (Entprellen)
+    
     while (digitalRead(BUTTON_PIN) == LOW) {
       delay(10);
     }
   }
 
-  delay(50); // Kurze Pause für die Schleife
+  delay(50); 
 }
